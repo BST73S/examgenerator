@@ -1,0 +1,92 @@
+/* ===== GENERAL ===== */
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 10px;
+}
+
+/* ===== INPUT UI ===== */
+.input-container {
+  max-width: 500px;
+  margin: auto;
+}
+
+input, button {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  font-size: 16px;
+}
+
+/* ===== PREVIEW ===== */
+.preview-container {
+  margin-top: 20px;
+}
+
+/* ===== A3 PAGE ===== */
+#a3-page {
+  display: none; /* Hidden until export */
+}
+
+/* A3 PAGE LOCK */
+.a3-page {
+  width: 420mm;
+  height: 297mm;
+
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  grid-template-rows: 1fr auto;
+
+  gap: 8mm;
+
+  overflow: hidden; /* 🔥 prevents spill to page 2 */
+}
+
+/* PREVENT ANY PAGE BREAKS */
+#a3-page, 
+#a3-page * {
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
+/* CONTROL IMAGE HEIGHT */
+.stimulus {
+  grid-column: 1 / span 2;
+  grid-row: 2;
+
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 5mm;
+
+  height: 70mm; /* 🔥 lock height */
+}
+
+.stimulus img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* PRINT MODE */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+
+  @media print {
+  body {
+    font-size: 11pt;
+  }
+}
+
+  #a3-page, #a3-page * {
+    visibility: visible;
+  }
+
+  #a3-page {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: grid;
+  }
+}
