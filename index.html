@@ -9,6 +9,39 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: Arial, Helvetica, sans-serif; background: #d6d1c8; }
 
+/* PASSWORD GATE */
+#pw-gate {
+  position: fixed; inset: 0; background: #1a1a2e;
+  display: flex; align-items: center; justify-content: center; z-index: 9999;
+}
+#pw-box {
+  background: #fff; border-radius: 8px; padding: 2.5rem 2rem;
+  width: 320px; text-align: center; box-shadow: 0 8px 40px rgba(0,0,0,.4);
+}
+#pw-box h2 { font-size: 1.1rem; font-weight: 700; color: #1a1a2e; margin-bottom: .4rem; }
+#pw-box p { font-size: .82rem; color: #666; margin-bottom: 1.2rem; }
+#pw-input {
+  width: 100%; border: 1px solid #ccc; border-radius: 4px;
+  padding: .55rem .8rem; font-family: Arial, Helvetica, sans-serif;
+  font-size: .95rem; margin-bottom: .7rem; outline: none; text-align: center; letter-spacing: .12em;
+}
+#pw-input:focus { border-color: #c84b31; }
+#pw-btn {
+  width: 100%; background: #c84b31; color: #fff; border: none; border-radius: 4px;
+  padding: .65rem; font-family: Arial, Helvetica, sans-serif; font-weight: 700; font-size: .9rem; cursor: pointer;
+}
+#pw-btn:hover { background: #a83a22; }
+#pw-error { color: #c84b31; font-size: .88rem; margin-top: .8rem; min-height: 1em; line-height: 1.5; }
+
+/* USAGE COUNTER STRIP */
+#usage-strip {
+  background: #111827; color: #6b7280;
+  font-size: .72rem; text-align: right;
+  padding: .3rem 1.8rem;
+  letter-spacing: .04em;
+}
+#usage-strip span { color: #9ca3af; font-weight: 600; }
+
 /* CONTROL PANEL */
 #control-panel {
   background: #1a1a2e; color: #fff;
@@ -87,9 +120,44 @@ body { font-family: Arial, Helvetica, sans-serif; background: #d6d1c8; }
   display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr;
   gap: .4em; flex: 1; min-height: 260px; height: 100%;
 }
-.img-slot { background: #e8e4dc; position: relative; overflow: hidden; min-height: 120px; }
+.img-slot {
+  background: #f0ece4;
+  position: relative;
+  overflow: hidden;
+  min-height: 120px;
+  border: 1.5px dashed #c8c0b0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  padding: .5em;
+}
 .img-slot img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
-.img-slot .img-ph { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); }
+.img-search-label {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .35em;
+}
+.img-search-label .img-num {
+  font-size: .62em;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: #b0a898;
+}
+.img-search-label .img-term {
+  font-size: .72em;
+  font-style: italic;
+  color: #666;
+  line-height: 1.35;
+}
+.img-search-label .img-hint {
+  font-size: .6em;
+  color: #b0a898;
+  margin-top: .15em;
+}
 .img-ph { display: flex; flex-direction: column; align-items: center; gap: .25em; color: #aaa; font-size: .68em; text-align: center; }
 .skel { background: linear-gradient(90deg,#ede8de 25%,#ddd8ce 50%,#ede8de 75%); background-size: 200% 100%; animation: sk 1.3s infinite; border-radius: 2px; height: .85em; margin-bottom: .28em; }
 @keyframes sk { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
@@ -98,12 +166,29 @@ body { font-family: Arial, Helvetica, sans-serif; background: #d6d1c8; }
   #control-panel { display: none !important; }
   #sheet-area { padding: 0; overflow: visible; }
   #exam-sheet { display: block !important; box-shadow: none; width: 100%; }
+  #pw-gate, #usage-strip { display: none !important; }
 }
 @page { size: A3 landscape; margin: 0; }
 </style>
 </head>
 <body>
 
+</div>
+
+<!-- PASSWORD GATE -->
+<div id="pw-gate">
+  <div id="pw-box">
+    <h2>Design Exam Generator</h2>
+    <p>Enter the access password to continue</p>
+    <input id="pw-input" type="password" placeholder="Password" />
+    <button id="pw-btn" onclick="checkPassword()">Enter</button>
+    <div id="pw-error"></div>
+  </div>
+</div>
+
+<!-- USAGE STRIP -->
+<div id="usage-strip">
+  Exams generated this session: <span id="usage-daily">0</span>
 </div>
 
 <!-- CONTROL PANEL -->
@@ -189,6 +274,42 @@ body { font-family: Arial, Helvetica, sans-serif; background: #d6d1c8; }
 <script>
 var $ = function(id) { return document.getElementById(id); };
 
+/* ── CHANGE PASSWORD HERE ── */
+var ACCESS_PASSWORD = 'des2026';
+
+function checkPassword() {
+  var val = $('pw-input').value.trim();
+  if (val === ACCESS_PASSWORD) {
+    $('pw-error').style.color = '#c84b31';
+    $('pw-error').innerHTML = 'Credits are currently on hold.<br>Email <a href="mailto:webdesignbyb@gmail.com" style="color:#c84b31;">webdesignbyb@gmail.com</a> to arrange further access.';
+    $('pw-input').value = '';
+  } else {
+    $('pw-error').textContent = 'Incorrect password. Please try again.';
+    $('pw-input').value = '';
+    $('pw-input').focus();
+  }
+}
+if (sessionStorage.getItem('exam_auth') === '1') {
+  $('pw-gate').style.display = 'none';
+  fetchUsage();
+}
+document.addEventListener('DOMContentLoaded', function() {
+  var pi = $('pw-input');
+  if (pi) pi.addEventListener('keydown', function(e) { if (e.key === 'Enter') checkPassword(); });
+});
+
+function fetchUsage() {
+  /* session-only counter — resets on page refresh */
+  var session = parseInt(sessionStorage.getItem('session_count') || '0');
+  if ($('usage-daily')) $('usage-daily').textContent = session;
+}
+
+function incrementUsage() {
+  var session = parseInt(sessionStorage.getItem('session_count') || '0') + 1;
+  sessionStorage.setItem('session_count', session);
+  if ($('usage-daily')) $('usage-daily').textContent = session;
+}
+
 /* ── RANDOM SCENARIO BANK ── aligned to QCAA Design 2025 units ── */
 var SCENARIOS = [
   { topic: 'School waste management', stakeholder: 'Secondary school student', issue: 'Littering and overflowing bins in school grounds', keywords: 'analyse, describe, justify' },
@@ -243,25 +364,23 @@ function showLoading() {
   $('crit-list').innerHTML = ch;
 }
 
-async function loadImages(terms) {
+function loadImages(terms) {
+  var labels = [
+    'Visual stimulus 1',
+    'Visual stimulus 2',
+    'Visual stimulus 3',
+    'Visual stimulus 4'
+  ];
   for (var i = 0; i < 4; i++) {
     var slot = $('img-' + i);
-    var term = encodeURIComponent(terms[i]);
-    try {
-      var res  = await fetch('https://en.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch=' + term + '&gsrlimit=5&prop=pageimages&piprop=thumbnail&pithumbsize=500&format=json&origin=*');
-      var data = await res.json();
-      var pages = Object.values((data.query && data.query.pages) || {});
-      var page = null;
-      for (var j = 0; j < pages.length; j++) { if (pages[j].thumbnail) { page = pages[j]; break; } }
-      if (page && page.thumbnail && page.thumbnail.source) {
-        var img = new Image();
-        img.crossOrigin = 'anonymous';
-        img.src = page.thumbnail.source;
-        img.style.width = '100%'; img.style.height = '100%';
-        img.style.objectFit = 'cover'; img.style.display = 'block';
-        (function(s, im) { im.onload = function() { s.innerHTML = ''; s.appendChild(im); }; })(slot, img);
-      }
-    } catch(e) {}
+    var term = terms[i] || 'Search term not provided';
+    slot.innerHTML =
+      '<div class="img-search-label">' +
+        '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#c8c0b0" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>' +
+        '<span class="img-num">' + labels[i] + '</span>' +
+        '<span class="img-term">' + term + '</span>' +
+        '<span class="img-hint">Search &amp; insert image</span>' +
+      '</div>';
   }
 }
 
@@ -318,9 +437,9 @@ function buildPrompt(topic, stakeholder, issue, keywords) {
     '    "expectations": ["4-6 word phrase","4-6 word phrase","4-6 word phrase","4-6 word phrase"]\n' +
     '  },\n' +
     '  "design_criteria": [\n' +
-    '    {"label":"One active verb + noun e.g. Improve Comfort, Integrate Storage, Support Mobility","description":"One concise sentence stating the requirement."},\n' +
-    '    {"label":"One active verb + noun e.g. Reduce Noise, Encourage Use, Secure Access","description":"One concise sentence."},\n' +
-    '    {"label":"One active verb + noun e.g. Enhance Aesthetics, Incentivise Behaviour, Simplify Navigation","description":"One concise sentence."}\n' +
+    '    {"label":"SINGLE verb + noun ONLY. Examples: Improve Comfort, Integrate Storage, Support Mobility, Reduce Noise, Encourage Use, Secure Access, Enhance Appearance, Incentivise Behaviour, Simplify Navigation, Enable Independence","description":"One concise sentence stating the measurable requirement."},\n' +
+    '    {"label":"SINGLE verb + noun ONLY — different verb from criterion 1","description":"One concise sentence."},\n' +
+    '    {"label":"SINGLE verb + noun ONLY — different verb from criteria 1 and 2","description":"One concise sentence."}\n' +
     '  ],\n' +
     '  "image_searches": [\n' +
     '    "Wikipedia search term for the problem context or environment — NO weapons, NO military, NO political, NO religious, NO adult content",\n' +
@@ -366,9 +485,16 @@ async function generate() {
     });
     var raw  = await res.json();
     var text = (raw.content || []).map(function(b) { return b.text || ''; }).join('');
+    /* check for daily limit error */
+    if (raw.error && raw.error.indexOf('Daily limit') !== -1) {
+      $('status').textContent = '⚠ ' + raw.error;
+      $('btn-gen').disabled = $('btn-rand').disabled = false;
+      return;
+    }
     var data = JSON.parse(text.replace(/```json|```/g, '').trim());
     populate(data, topic, stakeholder);
     $('status').textContent = 'Exam generated. Wait a moment for images to load before downloading PDF.';
+    incrementUsage();
     $('btn-pdf').disabled = $('btn-copy').disabled = false;
   } catch(e) {
     $('status').textContent = 'Generation failed - check the console.';
